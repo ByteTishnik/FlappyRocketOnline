@@ -57,6 +57,16 @@ class Program
         Random random = new Random();
 
         Game game = new Game();
+
+        string[] menuItems = {
+            "Play",
+            "Difficulty",
+            "Settings",
+            "Leaderboard",
+            "Exit"
+        };
+
+        int selectedIndex = 0;
         
 
         const int width = 1280;
@@ -98,6 +108,39 @@ class Program
             }
             }
 
+            if(game.state == GameState.Menu)
+            {
+                if (Raylib.IsKeyPressed(KeyboardKey.Up))
+                {
+                    selectedIndex--;
+                }
+                if (Raylib.IsKeyPressed(KeyboardKey.Down))
+                {
+                    selectedIndex++;
+                }
+                if(selectedIndex < 0)
+                {
+                    selectedIndex = menuItems.Length - 1;
+                }
+                if(selectedIndex >= menuItems.Length)
+                {
+                    selectedIndex = 0;
+                }
+            }
+
+            if(game.state == GameState.Menu && Raylib.IsKeyPressed(KeyboardKey.Enter))
+            {
+                switch (selectedIndex)
+                {
+                    case 0:
+                        game.state = GameState.Playing;
+                    break;
+
+                    case 4:
+                        return;
+                }
+            }
+
 
             game.Reset(game, bird , pipes , width , random);
 
@@ -105,6 +148,8 @@ class Program
             {
                 bird.velocity = jumpfoce;
             }
+
+            game.CheckPause();
 
             //Input
 
@@ -148,12 +193,24 @@ class Program
 
             if (game.state == GameState.Menu)
             {
-                DrawCenteredText("Press 'Space'" , Color.Black);
+               for (int i = 0 ; i < menuItems.Length; i++)
+                {
+                    Color color =
+                    i == selectedIndex ? Color.Yellow : Color.Black;
+
+                Raylib.DrawText(menuItems[i] , 500 , 250 + i * 60 , 40 , color);
+                }
             }
+
 
             if (game.state == GameState.GameOver)
             {
                DrawCenteredText("Game over!" , Color.Red);
+            }
+
+            if(game.state == GameState.Paused)
+            {
+                DrawCenteredText("Pause" , Color.Black);
             }
 
             Raylib.DrawText("Flappy Bird" , 20 , 20 , 25 , Color.Black);

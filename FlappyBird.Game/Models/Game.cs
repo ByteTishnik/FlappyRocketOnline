@@ -9,15 +9,11 @@ public class Game
 
 
     public GameState state = GameState.Menu;
+    public Difficulty difficulty = Difficulty.Medium;
 
     public void Start(Game game)
     {
-        if(Raylib.IsKeyPressed(KeyboardKey.Space) && game.state == GameState.Menu)
-            {
-                game.state = GameState.Playing;
-            }
-
-
+        
             if(game.state == GameState.Playing )
             {
                 game.gravity = 900f;
@@ -59,5 +55,20 @@ public class Game
                 game.speed = 0;
                 game.score = 0;
             }
+    }
+
+    public void CheckPause()
+    {
+        if (Raylib.IsKeyPressed(KeyboardKey.P))
+        {
+            if(state == GameState.Playing)
+            {
+                state = GameState.Paused;
+            }
+            else if(state == GameState.Paused)
+            {
+                state = GameState.Playing;
+            }
+        }
     }
 }
