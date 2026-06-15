@@ -66,7 +66,16 @@ class Program
             "Exit"
         };
 
+        string[] difficultyItems = {
+            "Easy",
+            "Medium",
+            "Hard",
+            "Dynamic",
+            "Back"
+        };
+
         int selectedIndex = 0;
+        int selectedDifficultyIndex = 0;
         
 
         const int width = 1280;
@@ -108,7 +117,11 @@ class Program
             }
             }
 
-            if(game.state == GameState.Menu)
+            switch (game.state)
+            {
+                case GameState.Menu :
+
+                    if(game.state == GameState.Menu)
             {
                 if (Raylib.IsKeyPressed(KeyboardKey.Up))
                 {
@@ -128,6 +141,7 @@ class Program
                 }
             }
 
+
             if(game.state == GameState.Menu && Raylib.IsKeyPressed(KeyboardKey.Enter))
             {
                 switch (selectedIndex)
@@ -136,10 +150,73 @@ class Program
                         game.state = GameState.Playing;
                     break;
 
+                    case 1:
+                        game.state = GameState.DifficultyMenu;
+                    break;
+
                     case 4:
                         return;
                 }
             }
+
+                break;
+
+                case GameState.DifficultyMenu :
+
+                    if(game.state == GameState.DifficultyMenu)
+            {
+                if (Raylib.IsKeyPressed(KeyboardKey.Up))
+                {
+                    selectedDifficultyIndex--;
+                }
+                if (Raylib.IsKeyPressed(KeyboardKey.Down))
+                {
+                    selectedDifficultyIndex++;
+                }
+                if(selectedDifficultyIndex < 0)
+                {
+                    selectedDifficultyIndex = difficultyItems.Length - 1;
+                }
+                if(selectedDifficultyIndex >= difficultyItems.Length)
+                {
+                    selectedDifficultyIndex = 0;
+                }
+            }
+
+            if(game.state == GameState.DifficultyMenu && Raylib.IsKeyPressed(KeyboardKey.Enter))
+            {
+                switch(selectedDifficultyIndex)
+                {
+                    case 0:
+                       game.difficulty = Difficulty.Easy;
+                       game.state = GameState.Menu;
+                    break;
+
+                    case 1:
+                        game.difficulty = Difficulty.Medium;
+                        game.state = GameState.Menu;
+                    break;
+
+                    case 2:
+                        game.difficulty = Difficulty.Hard;
+                        game.state = GameState.Menu;
+                    break;
+
+                    case 3:
+                        game.difficulty = Difficulty.Dynamic;
+                        game.state = GameState.Menu;
+                    break;
+
+                    case 4:
+                        Console.WriteLine("Back is passed");
+                        game.state = GameState.Menu;
+                    break;
+                }
+            }
+                
+                break;
+            }
+
 
 
             game.Reset(game, bird , pipes , width , random);
@@ -202,6 +279,16 @@ class Program
                 }
             }
 
+            if(game.state == GameState.DifficultyMenu)
+            {
+                for(int i = 0 ; i < difficultyItems.Length; i++)
+                {
+                    Color color =
+                    i == selectedDifficultyIndex ? Color.Yellow : Color.Black;
+
+                    Raylib.DrawText(difficultyItems[i] , 500 , 250 + i * 60 , 40 , color);
+                }
+            }
 
             if (game.state == GameState.GameOver)
             {
@@ -215,6 +302,14 @@ class Program
 
             Raylib.DrawText("Flappy Bird" , 20 , 20 , 25 , Color.Black);
             Raylib.DrawText($"Score: {game.score}" , 20 , 60 , 30 , Color.Black);
+
+        //debug panel:
+
+            Raylib.DrawText($"DifficultyIndex: {selectedDifficultyIndex}",20,100,20,Color.Red);
+
+            Raylib.DrawText($"State: {game.state}",20,130,20,Color.Red);
+
+            Raylib.DrawText($"Selected Difficulty: {game.difficulty}",20,160,20,Color.Red);
 
 
         //Drawing text
