@@ -2,6 +2,7 @@
 
 class Program
 {
+
     static bool CheckCollision(Bird bird , Pipe pipe , float tubeDownY , float tubeDownHeight)
     {
         Rectangle birdHitBox = new Rectangle(
@@ -91,6 +92,14 @@ class Program
         Raylib.InitWindow(width , height , "Flappy Bird");
         Raylib.SetTargetFPS(60);
 
+        Texture2D background = Raylib.LoadTexture("Assets/Background.png");
+
+
+        float bgX1 = 0;
+        float bgX2 = background.Width;
+        float bgSpeed = 50f;
+
+
 
             for(int i = 0; i < pipes.Length ; i++)
             {
@@ -104,15 +113,35 @@ class Program
 
         
             game.Start(game);
+
+
+            float dt = Raylib.GetFrameTime();
+
+            bgX1 -= bgSpeed * dt;
+            bgX2 -= bgSpeed * dt;
         
+
+            if(bgX1 <= -background.Width)
+            {
+                bgX1 = bgX2 + background.Width;
+            }
+
+            if(bgX2 <= -background.Width)
+            {
+                bgX2 = bgX1 + background.Width;
+            }
+
+
         
             if (game.state == GameState.Playing)
             {
-                bird.Update(bird , game.gravity);
+                game.ApplyDifficulty();
+
+                bird.Update(game.gravity);
 
                 foreach(Pipe pipe in pipes)
             {
-                pipe.Update(game.speed , width , random);
+                pipe.Update(game.speed , width , random , game.pipeGap);
                 game.ScoreSystem(pipe , bird);
             }
             }
@@ -254,6 +283,10 @@ class Program
             Raylib.ClearBackground(Color.SkyBlue);
 
 
+            Raylib.DrawTexture(background , (int)bgX1 , 0 , Color.White);
+            Raylib.DrawTexture(background , (int)bgX2 , 0 , Color.White);
+
+
             foreach(Pipe pipe in pipes)
             {
                 float tubeDownY = pipe.gapY + pipe.gapSize;
@@ -264,7 +297,10 @@ class Program
 
             //Drawing pipes! 
 
-            bird.Draw();
+           if(game.state == GameState.Playing || game.state == GameState.Paused || game.state == GameState.GameOver)
+            {
+                 bird.Draw();
+            }
 
             //Draw bird
 
@@ -273,7 +309,7 @@ class Program
                for (int i = 0 ; i < menuItems.Length; i++)
                 {
                     Color color =
-                    i == selectedIndex ? Color.Yellow : Color.Black;
+                    i == selectedIndex ? Color.Yellow : Color.White;
 
                 Raylib.DrawText(menuItems[i] , 500 , 250 + i * 60 , 40 , color);
                 }
@@ -284,7 +320,7 @@ class Program
                 for(int i = 0 ; i < difficultyItems.Length; i++)
                 {
                     Color color =
-                    i == selectedDifficultyIndex ? Color.Yellow : Color.Black;
+                    i == selectedDifficultyIndex ? Color.Yellow : Color.White;
 
                     Raylib.DrawText(difficultyItems[i] , 500 , 250 + i * 60 , 40 , color);
                 }
@@ -297,11 +333,11 @@ class Program
 
             if(game.state == GameState.Paused)
             {
-                DrawCenteredText("Pause" , Color.Black);
+                DrawCenteredText("Pause" , Color.White);
             }
 
-            Raylib.DrawText("Flappy Bird" , 20 , 20 , 25 , Color.Black);
-            Raylib.DrawText($"Score: {game.score}" , 20 , 60 , 30 , Color.Black);
+            Raylib.DrawText("Flappy Rocket" , 20 , 20 , 25 , Color.White);
+            Raylib.DrawText($"Score: {game.score}" , 20 , 60 , 30 , Color.White);
 
         //debug panel:
 
@@ -316,6 +352,8 @@ class Program
 
             Raylib.EndDrawing();
         }
+
+        Raylib.UnloadTexture(background);
 
         Raylib.CloseWindow();
     }

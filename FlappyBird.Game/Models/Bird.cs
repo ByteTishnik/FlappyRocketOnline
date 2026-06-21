@@ -8,19 +8,20 @@ public class Bird
     public int radius = 20;
 
 
-    public void Update(Bird bird , float gravity)
+    public void Update(float gravity)
     {
-        bird.velocity += gravity * Raylib.GetFrameTime();
-        bird.y += bird.velocity * Raylib.GetFrameTime();
+        velocity += gravity * Raylib.GetFrameTime();
+        y += velocity * Raylib.GetFrameTime();
 
-        if(bird.y < 0)
+        if(y < 0)
             {
-                bird.y = 0;
+                y = 0;
             }
     }
 
     public void Draw()
     {
-        Raylib.DrawCircle((int)x , (int)y , radius , Color.Yellow);
+        Raylib.DrawCircle((int)x , (int)y , radius , Color.Red);
     }
+    
 }

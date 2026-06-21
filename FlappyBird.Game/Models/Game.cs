@@ -7,6 +7,8 @@ public class Game
     public float gravity = 0;
     public float speed = 0;
 
+    public float pipeGap = 260f;
+
 
     public GameState state = GameState.Menu;
     public Difficulty difficulty = Difficulty.Medium;
@@ -69,6 +71,32 @@ public class Game
             {
                 state = GameState.Playing;
             }
+        }
+    }
+
+    public void ApplyDifficulty()
+    {
+        switch (difficulty)
+        {
+            case Difficulty.Easy:
+                speed = 180f;
+                pipeGap = 280f;
+            break;
+
+            case Difficulty.Medium:
+                speed = 260f;
+                pipeGap = 220f;
+            break;
+
+            case Difficulty.Hard:
+                speed = 340f;
+                pipeGap = 190f;
+            break;
+
+            case Difficulty.Dynamic:
+                speed = 220f + score * 5;
+                pipeGap = Math.Max(150f , 250f - score * 2);
+            break;
         }
     }
 }

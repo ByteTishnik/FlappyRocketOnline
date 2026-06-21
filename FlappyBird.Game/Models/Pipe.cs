@@ -7,8 +7,10 @@ public class Pipe
     public bool passed = false;
     public float gapSize = 260f;
 
+    public float pipeGap = 260f;
 
-    public void Update(float speed , int width , Random random)
+
+    public void Update(float speed , int width , Random random , float pipeGap)
     {
         x -= speed * Raylib.GetFrameTime();
 
@@ -16,14 +18,15 @@ public class Pipe
             {
                 x = width;
                 gapY = random.Next(100 , 440);
+                gapSize = pipeGap;
                 passed = false;
             }
     }
 
     public void Draw(Pipe pipe , float tubeDownHight , float tubeDownY , float tubeUpY)
     {
-        Raylib.DrawRectangle((int)pipe.x , (int)tubeUpY , 70 , (int)pipe.gapY , Color.Green);
+        Raylib.DrawRectangle((int)pipe.x , (int)tubeUpY , 70 , (int)pipe.gapY , Color.Gray);
 
-        Raylib.DrawRectangle((int)pipe.x , (int)tubeDownY ,70 , (int)tubeDownHight , Color.Green);
+        Raylib.DrawRectangle((int)pipe.x , (int)tubeDownY ,70 , (int)tubeDownHight , Color.Gray);
     }
 }
