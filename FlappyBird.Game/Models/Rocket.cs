@@ -1,7 +1,7 @@
 using System.Numerics;
 using Raylib_cs;
 
-public class Bird
+public class Rocket
 {
     public float x = 200f;
     public float y = 360f;
@@ -10,12 +10,12 @@ public class Bird
     public float velocity = 0;
     public int radius = 20;
 
-    public Texture2D rocket;
+    public Texture2D rocketSprite;
 
 
-    public Bird()
+    public Rocket()
     {
-        rocket = Raylib.LoadTexture("Assets/Sprites/rocket2.png");
+        rocketSprite = Raylib.LoadTexture("Assets/Sprites/rocket2.png");
     }
 
 
@@ -36,16 +36,16 @@ public class Bird
 
          Vector2 origin = new Vector2(64 , 64);
 
-         Rectangle source = new Rectangle(0 , 0 , rocket.Width , rocket.Height);
+         Rectangle source = new Rectangle(0 , 0 , rocketSprite.Width , rocketSprite.Height);
 
          float rotation = velocity * 0.05f;
          rotation = Math.Clamp(rotation, -30f , 60f);
 
-        Raylib.DrawTexturePro(rocket , source , dest , origin , rotation , Color.White);
+        Raylib.DrawTexturePro(rocketSprite , source , dest , origin , rotation , Color.White);
     }
     
     public void UnLoad()
     {
-        Raylib.UnloadTexture(rocket);
+        Raylib.UnloadTexture(rocketSprite);
     }
 }

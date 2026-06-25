@@ -1,14 +1,15 @@
-﻿using Raylib_cs;
+using System.Numerics;
+using Raylib_cs;
 
 class Program
 {
 
-    static bool CheckCollision(Bird bird , Pipe pipe , float tubeDownY , float tubeDownHeight)
+    static bool CheckCollision(Rocket rocket , Pipe pipe , float tubeDownY , float tubeDownHeight)
     {
         Rectangle birdHitBox = new Rectangle(
         
-            bird.x - 45,
-            bird.y - 30,
+            rocket.x - 45,
+            rocket.y - 30,
             55,
             30
         );
@@ -46,6 +47,8 @@ class Program
 
         Raylib.DrawText(text , x , y , fontsize , color);
     }
+
+     static bool debugMenu = false;
     
 
     static void Main()
@@ -57,24 +60,15 @@ class Program
 
         Game game = new Game();
 
-        string[] menuItems = {
-            "Play",
-            "Difficulty",
-            "Settings",
-            "Leaderboard",
-            "Exit"
-        };
+        string[] menuItems = Array.Empty<string>();
+        string[] difficultyItems = Array.Empty<string>();
+        string[] settingItems = Array.Empty<string>();
 
-        string[] difficultyItems = {
-            "Easy",
-            "Medium",
-            "Hard",
-            "Dynamic",
-            "Back"
-        };
 
         int selectedIndex = 0;
         int selectedDifficultyIndex = 0;
+        int selectedSettingsIndex = 0;
+
         
 
         const int width = 1280;
@@ -90,6 +84,10 @@ class Program
         Raylib.InitWindow(width , height , "Flappy Bird");
         Raylib.SetTargetFPS(60);
 
+
+        Font gameFont = Raylib.LoadFontEx("Assets/Fonts/PixelifySans-VariableFont_wght.ttf" , 40 , null , 0);
+
+
         Texture2D background = Raylib.LoadTexture("Assets/Sprites/Background.png");
         Texture2D title = Raylib.LoadTexture("Assets/Sprites/GameTitle.png");
 
@@ -102,7 +100,7 @@ class Program
 
 
 
-        Bird bird = new Bird();
+        Rocket rocket = new Rocket();
 
 
         float bgX1 = 0;
@@ -149,13 +147,66 @@ class Program
             {
                 game.ApplyDifficulty();
 
-                bird.Update(game.gravity);
+                rocket.Update(game.gravity);
 
                 foreach(Pipe pipe in pipes)
             {
                 pipe.Update(game.speed , width , random , game.pipeGap);
-                game.ScoreSystem(pipe , bird);
+                game.ScoreSystem(pipe , rocket);
             }
+            }
+
+            if (game.language == Language.English)
+            {
+            menuItems = new string[] {
+                "Play",
+                "Difficulty",
+                "Settings",
+                "Leaderboard",
+                "Exit"
+            };
+
+            difficultyItems = new string[] {
+                "Easy",
+                "Medium",
+                "Hard",
+                "Dynamic",
+                "Back"
+            };
+
+            settingItems = new string[] {
+                $"Language: {game.language}",
+                "Back"
+            };
+            }
+
+            else
+            {
+
+            menuItems = new string[]
+            {
+                "Играть",
+                "Сложность",
+                "Настройки",
+                "Таблица Лидеров",
+                "Выход"
+            };
+
+            difficultyItems = new string[]
+            {
+                "Легко",
+                "Средне",
+                "Сложно",
+                "Динамика",
+                "Назад"
+            };
+                
+       
+            settingItems = new string[]
+            {
+            $"Язык:{game.language}",
+            "Назад"
+            };
             }
 
             switch (game.state)
@@ -191,6 +242,10 @@ class Program
 
                     case 1:
                         game.state = GameState.DifficultyMenu;
+                    break;
+
+                    case 2:
+                        game.state = GameState.Setting;
                     break;
 
                     case 4:
@@ -252,16 +307,76 @@ class Program
             }
                 
                 break;
+
+                    case GameState.Setting:
+
+                        if (Raylib.IsKeyPressed(KeyboardKey.Up))
+                    {
+                        selectedSettingsIndex--;
+                    }
+                    if (Raylib.IsKeyPressed(KeyboardKey.Down))
+                    {
+                        selectedSettingsIndex++;
+                    }
+                    if(selectedSettingsIndex < 0)
+                    {
+                        selectedSettingsIndex = settingItems.Length - 1;
+                    }
+                    if(selectedSettingsIndex >= settingItems.Length)
+                    {
+                        selectedSettingsIndex = 0;
+                    }
+
+                    if(game.state == GameState.Setting && Raylib.IsKeyPressed(KeyboardKey.Enter))
+                    {
+                        switch (selectedSettingsIndex)
+                        {
+                            case 0:
+                                if(game.language == Language.English)
+                                {
+                                    game.language = Language.Russian;
+                                    selectedSettingsIndex = 0;
+                                }
+                                else if(game.language == Language.Russian)
+                                {
+                                    game.language = Language.English;
+                                    selectedSettingsIndex = 0;
+                                }
+
+                            break;
+
+                            case 1:
+                                    game.state = GameState.Menu;
+                            break;
+                        }
+                    }
+
+                    break;
             }
 
 
 
-            game.Reset(game, bird , pipes , width , random);
+            game.Reset(game, rocket , pipes , width , random);
 
             if (game.state == GameState.Playing && Raylib.IsKeyPressed(KeyboardKey.Space))
             {
-                bird.velocity = jumpfoce;
+                rocket.velocity = jumpfoce;
             }
+
+            if(Raylib.IsKeyPressed(KeyboardKey.B))
+            {
+
+            if (debugMenu == false)
+                {
+                    debugMenu = true;
+                }
+            
+            else if(debugMenu == true)
+                {
+                    debugMenu = false;
+                }
+            }
+
 
             game.CheckPause();
 
@@ -269,7 +384,7 @@ class Program
 
 
 
-            if(bird.y > height + 10)
+            if(rocket.y > height + 10)
             {
                game.state = GameState.GameOver;
             }
@@ -280,7 +395,7 @@ class Program
                 float tubeDownY = pipe.gapY + pipe.gapSize;
                 float tubeDownHeight = height - tubeDownY;
 
-                if (CheckCollision(bird , pipe , tubeDownY , tubeDownHeight))
+                if (CheckCollision(rocket , pipe , tubeDownY , tubeDownHeight))
                 {
                     game.state = GameState.GameOver;
                 }
@@ -307,7 +422,7 @@ class Program
 
            if(game.state == GameState.Playing || game.state == GameState.Paused || game.state == GameState.GameOver)
             {
-                 bird.Draw();
+                 rocket.Draw();
             }
 
             //Draw bird
@@ -324,7 +439,7 @@ class Program
 
                 int menuStartY = 350;
 
-                Raylib.DrawText(menuItems[i] , 500 , menuStartY + i * 60 , 40 , color);
+                Raylib.DrawTextEx(gameFont , menuItems[i] , new Vector2(500 , menuStartY + i * 60) , 40 , 2 , color);
 
                 }
             }
@@ -338,7 +453,18 @@ class Program
                     Color color =
                     i == selectedDifficultyIndex ? Color.Yellow : Color.White;
 
-                    Raylib.DrawText(difficultyItems[i] , 500 , 250 + i * 60 , 40 , color);
+                    Raylib.DrawTextEx(gameFont , difficultyItems[i] , new Vector2(500 , 250 + i * 60) , 40 , 2 , color);
+                }
+            }
+
+            if(game.state == GameState.Setting)
+            {
+                for(int i = 0; i < settingItems.Length ; i++)
+                {
+                    Color color = 
+                    i == selectedSettingsIndex ? Color.Yellow : Color.White;
+
+                    Raylib.DrawTextEx(gameFont , settingItems[i] , new Vector2(500 , 250 + i * 60) , 40 , 2 , color);
                 }
             }
 
@@ -352,16 +478,22 @@ class Program
                 DrawCenteredText("Pause" , Color.White);
             }
 
-            Raylib.DrawText("Flappy Rocket" , 20 , 20 , 25 , Color.White);
-            Raylib.DrawText($"Score: {game.score}" , 20 , 60 , 30 , Color.White);
+            if(game.state == GameState.Playing)
+            {
+                Raylib.DrawText($"Score: {game.score}" , 20 , 20 , 30 , Color.White);
+            }
 
         //debug panel:
 
-            Raylib.DrawText($"DifficultyIndex: {selectedDifficultyIndex}",20,100,20,Color.Red);
+        if(debugMenu == true)
+            {
+                Raylib.DrawText($"DifficultyIndex: {selectedDifficultyIndex}",20,100,20,Color.Red);
 
-            Raylib.DrawText($"State: {game.state}",20,130,20,Color.Red);
+                Raylib.DrawText($"State: {game.state}",20,130,20,Color.Red);
 
-            Raylib.DrawText($"Selected Difficulty: {game.difficulty}",20,160,20,Color.Red);
+                Raylib.DrawText($"Selected Difficulty: {game.difficulty}",20,160,20,Color.Red);
+            }
+            
 
 
         //Drawing text
@@ -369,9 +501,10 @@ class Program
             Raylib.EndDrawing();
         }
 
+        Raylib.UnloadFont(gameFont);
         Raylib.UnloadTexture(title);
         Raylib.UnloadTexture(background);
-        bird.UnLoad();
+        rocket.UnLoad();
 
         Raylib.UnloadMusicStream(ambient);
         Raylib.CloseAudioDevice();

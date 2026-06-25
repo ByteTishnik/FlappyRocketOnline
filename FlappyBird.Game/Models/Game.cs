@@ -12,6 +12,7 @@ public class Game
 
     public GameState state = GameState.Menu;
     public Difficulty difficulty = Difficulty.Medium;
+    public Language language = Language.English;
 
     public void Start(Game game)
     {
@@ -23,9 +24,9 @@ public class Game
             }
     }
 
-    public void ScoreSystem(Pipe pipe , Bird bird)
+    public void ScoreSystem(Pipe pipe , Rocket rocket)
     {
-        if(!pipe.passed && pipe.x + 70 < bird.x)
+        if(!pipe.passed && pipe.x + 70 < rocket.x)
             {
                 score++;
                 pipe.passed = true;
@@ -34,7 +35,7 @@ public class Game
 
     public void Reset(
         Game game,    
-        Bird bird, 
+        Rocket rocket, 
         Pipe[] pipes, 
         float width,  
         Random random)
@@ -50,9 +51,9 @@ public class Game
                     pipes[i].passed = false;
                 }
 
-                bird.x = 200f;
-                bird.y = 360f;
-                bird.velocity = 0;
+                rocket.x = 200f;
+                rocket.y = 360f;
+                rocket.velocity = 0;
                 game.gravity = 0;
                 game.speed = 0;
                 game.score = 0;
