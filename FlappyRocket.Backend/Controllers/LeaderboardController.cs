@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using FlappyRocket.Backend.Controllers;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace FlappyRocket.Backend.Controllers;
 
@@ -16,16 +17,27 @@ public class LeaderboardController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetScores()
+    public IActionResult GetScores(Difficulty difficulty)
     {
-        return Ok(_leaderboardService.GetScores());
+        return Ok(_leaderboardService.GetScores(difficulty));
     }
 
     [Authorize]
     [HttpPost]
-    public IActionResult AddScore([FromBody] ScoreEntry score)
+    public IActionResult AddScore(AddScoreRequest request)
     {
-        _leaderboardService.AddScore(score);
+        
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if(claim == null)
+        {
+            return Unauthorized();
+        }
+
+        int userId = int.Parse(claim.Value);
+
+
+        _leaderboardService.AddScore(request , userId);
 
         return Ok("Score added successesfully");
     }

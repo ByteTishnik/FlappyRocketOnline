@@ -10,14 +10,44 @@ public class LeaderboardService
         _context = context;
     }
 
-    public List<ScoreEntry> GetScores()
+    public List<LeaderboardEntryDto> GetScores(Difficulty difficulty)
     {
-        return _context.Scores.OrderByDescending(x => x.Score).ToList();
+        return _context.Scores.Where(x => x.Difficulty == difficulty).OrderByDescending(x => x.Score).Select(x => new LeaderboardEntryDto
+        {
+            Username = x.User.Username,
+            Score = x.Score,
+            Date = x.Date,
+            Difficulty = x.Difficulty
+        }).ToList();
     }
 
-    public void AddScore(ScoreEntry score)
+    public void AddScore(AddScoreRequest request , int userId)
     {
-        _context.Scores.Add(score);
-        _context.SaveChanges();
+
+       var scoreEntry = new ScoreEntry
+       {
+         UserID = userId,
+         Score = request.Score,
+         Difficulty = request.Difficulty,
+         Date = DateTime.UtcNow,  
+       };
+
+       var existingRecord = _context.Scores.FirstOrDefault(x => x.UserID == userId && x.Difficulty == request.Difficulty);
+
+       if(existingRecord == null)
+        {
+            _context.Scores.Add(scoreEntry);
+        }
+        else
+        {
+            if(request.Score > existingRecord.Score)
+            {
+                existingRecord.Score = request.Score;
+                existingRecord.Date = DateTime.Now;
+            }
+        }
+
+       _context.SaveChanges();
+
     }
 }

@@ -5,4 +5,5 @@ public class ScoreEntry
     public int Score {get; set;}
     public DateTime Date {get; set; }
     public User? User {get; set;}
+    public Difficulty Difficulty {get; set;}
 }
