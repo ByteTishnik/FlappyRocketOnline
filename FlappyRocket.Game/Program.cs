@@ -51,7 +51,7 @@ class Program
      static bool debugMenu = false;
     
 
-    static void Main()
+    static async Task Main()
     {
 
         Pipe[] pipes = new Pipe[3];
@@ -60,14 +60,32 @@ class Program
 
         Game game = new Game();
 
+        HttpClient client = new HttpClient();
+
+        ApiService _apiService = new ApiService(client);
+
+        UserSession session = new UserSession();
+
+         
+
         string[] menuItems = Array.Empty<string>();
         string[] difficultyItems = Array.Empty<string>();
         string[] settingItems = Array.Empty<string>();
+        string[] startScreenItems = Array.Empty<string>();
+        string[] loginScreenItems = Array.Empty<string>();
+        string[] registerScreenItems = Array.Empty<string>();
+        string[] leaderboardScreenItems = Array.Empty<string>();
+        string[] leaderboardDifficultyItems = Array.Empty<string>();
 
 
         int selectedIndex = 0;
         int selectedDifficultyIndex = 0;
         int selectedSettingsIndex = 0;
+        int selectedStartScreenIdex = 0;
+        int selectedLoginScreenIndex = 0;
+        int selectedRegisterScreenIndex = 0;
+        int selectedLeaderboardScreenIndex = 0;
+        int selectedLeaderboardDifficultyIndex = 0;
 
         
 
@@ -106,6 +124,23 @@ class Program
         float bgX1 = 0;
         float bgX2 = background.Width;
         float bgSpeed = 50f;
+
+
+        string username = "";
+        string password = "";
+        string loginError = "";
+        string registerMessage = "";
+
+
+        Task<String>? loginTask = null;
+
+        Task<bool>? registerTask = null;
+
+        Task<List<LeaderboardEntryDto>?> leaderboardTask = null;
+
+        List<LeaderboardEntryDto>? leaderboardEntries = null;
+
+        Task<bool>? addScoreTask = null;
 
 
 
@@ -151,7 +186,7 @@ class Program
 
                 foreach(Pipe pipe in pipes)
             {
-                pipe.Update(game.speed , width , random , game.pipeGap);
+                pipe.Update(pipes , game.speed , width , random , game.pipeGap);
                 game.ScoreSystem(pipe , rocket);
             }
             }
@@ -178,7 +213,47 @@ class Program
                 $"Language: {game.language}",
                 "Back"
             };
+
+            startScreenItems = new string[]
+            {
+                "Register",
+                "Login",
+                "Play as Guest",
+                "Exit"
+            };
+
+            loginScreenItems = new string[]
+            {
+                "Username: ",
+                "Password: ",
+                "Enter",
+                "Back"
+            };
+
+            registerScreenItems = new string[]
+            {
+                "Username: ",
+                "Password: ",
+                "Enter",
+                "Back"
+            };
+
+            leaderboardScreenItems = new string[]
+            {
+                "Easy",
+                "Medium",
+                "Hard",
+                "Dynamic",
+                "Back",
+            };
+
+            leaderboardDifficultyItems = new string[]
+            {
+                "Back"
+            };
+
             }
+
 
             else
             {
@@ -207,7 +282,16 @@ class Program
             $"Язык:{game.language}",
             "Назад"
             };
+
+            startScreenItems = new string[]
+            {
+                "Зарегестрироватся",
+                "Войти",
+                "Играть как гость",
+                "Выход"
+            };
             }
+            
 
             switch (game.state)
             {
@@ -246,6 +330,10 @@ class Program
 
                     case 2:
                         game.state = GameState.Setting;
+                    break;
+
+                    case 3:
+                        game.state = GameState.LeaderboardMenu;
                     break;
 
                     case 4:
@@ -300,7 +388,6 @@ class Program
                     break;
 
                     case 4:
-                        Console.WriteLine("Back is passed");
                         game.state = GameState.Menu;
                     break;
                 }
@@ -310,7 +397,7 @@ class Program
 
                     case GameState.Setting:
 
-                        if (Raylib.IsKeyPressed(KeyboardKey.Up))
+                    if (Raylib.IsKeyPressed(KeyboardKey.Up))
                     {
                         selectedSettingsIndex--;
                     }
@@ -350,13 +437,315 @@ class Program
                             break;
                         }
                     }
+        
+                    break;
+
+                    case GameState.StartScreen:
+
+                    if (Raylib.IsKeyPressed(KeyboardKey.Up))
+                    {
+                        selectedStartScreenIdex--;
+                    }
+                    if (Raylib.IsKeyPressed(KeyboardKey.Down))
+                    {
+                        selectedStartScreenIdex++;
+                    }
+                    if(selectedStartScreenIdex < 0)
+                    {
+                        selectedStartScreenIdex = startScreenItems.Length - 1;
+                    }
+                    if(selectedStartScreenIdex >= startScreenItems.Length)
+                    {
+                        selectedStartScreenIdex = 0;
+                    }
+
+                    if(game.state == GameState.StartScreen && Raylib.IsKeyPressed(KeyboardKey.Enter))
+                    {
+                        switch (selectedStartScreenIdex)
+                        {
+                            case 0:
+                                game.state = GameState.Register;
+                            break;
+
+                            case 1:
+                                game.state = GameState.Login;
+                            break;
+
+                            case 2:
+                                game.state = GameState.Menu;
+                            break;
+
+                            case 3:
+                                return;
+                        }
+                    }
+
+                    break;
+
+                    case GameState.Login:
+
+                    if (Raylib.IsKeyPressed(KeyboardKey.Up))
+                    {
+                        selectedLoginScreenIndex--;
+                    }
+                    if (Raylib.IsKeyPressed(KeyboardKey.Down))
+                    {
+                        selectedLoginScreenIndex++;
+                    }
+                    if(selectedLoginScreenIndex < 0)
+                    {
+                        selectedLoginScreenIndex = loginScreenItems.Length - 1;
+                    }
+                    if(selectedLoginScreenIndex >= loginScreenItems.Length)
+                    {
+                        selectedLoginScreenIndex = 0;
+                    }
+
+                if(game.state == GameState.Login && Raylib.IsKeyPressed(KeyboardKey.Enter))
+                    {
+                        switch (selectedLoginScreenIndex)
+                    {
+
+                        case 0:
+                            break;
+
+
+                        case 1:
+                            break;
+
+
+                        case 2:
+                             loginTask = _apiService.LoginAsync(username , password);
+                        break;
+
+
+                        case 3:
+                            game.state = GameState.StartScreen;
+                            selectedStartScreenIdex = 0;
+                            selectedLoginScreenIndex = 0;
+                        break;
+                    }
+                    }
+
+                    int key = Raylib.GetCharPressed();
+
+                    while(key > 0)
+                        {
+                            if (selectedLoginScreenIndex == 0)
+                            {
+                                 username += (char)key;
+                            }
+                            if(selectedLoginScreenIndex == 1)
+                            {
+                                 password += (char)key;
+                            }
+
+
+                            key = Raylib.GetCharPressed();
+                        }
+
+                        if (Raylib.IsKeyPressed(KeyboardKey.Backspace))
+                            {
+                                if (selectedLoginScreenIndex == 0)
+                                {
+                                    if(username.Length > 0)
+                                    {
+                                        username = username[..^1];
+                                    }
+                                }
+
+                                else if (selectedLoginScreenIndex == 1)
+                                    {
+                                        if(password.Length > 0)
+                                        {
+                                            password = password[..^1];
+                                        }
+                                    }
+                            }                        
+                    break;
+
+
+                    case GameState.Register:
+
+                    if (Raylib.IsKeyPressed(KeyboardKey.Up))
+                    {
+                        selectedRegisterScreenIndex--;
+                    }
+                    if (Raylib.IsKeyPressed(KeyboardKey.Down))
+                    {
+                        selectedRegisterScreenIndex++;
+                    }
+                    if(selectedRegisterScreenIndex < 0)
+                    {
+                        selectedRegisterScreenIndex = registerScreenItems.Length - 1;
+                    }
+                    if(selectedRegisterScreenIndex >= registerScreenItems.Length)
+                    {
+                        selectedRegisterScreenIndex = 0;
+                    }
+
+                
+                if(game.state == GameState.Register && Raylib.IsKeyPressed(KeyboardKey.Enter))
+                    {
+                        switch (selectedRegisterScreenIndex)
+                    {
+                        case 0:
+                            break;
+
+                        case 1:
+                            break;
+
+                        case 2:
+                            registerTask = _apiService.RegisterAsync(username , password);
+                        break;
+
+                        case 3:
+                            game.state = GameState.StartScreen;
+                            selectedStartScreenIdex = 0;
+                            selectedRegisterScreenIndex = 0;
+                        break;
+                    }
+                    }
+
+                    key = Raylib.GetCharPressed();
+
+                    while(key > 0)
+                        {
+                            if (selectedRegisterScreenIndex == 0)
+                            {
+                                 username += (char)key;
+                            }
+                            if(selectedRegisterScreenIndex == 1)
+                            {
+                                 password += (char)key;
+                            }
+
+
+                            key = Raylib.GetCharPressed();
+                        }
+
+                        if (Raylib.IsKeyPressed(KeyboardKey.Backspace))
+                            {
+                                if (selectedRegisterScreenIndex == 0)
+                                {
+                                    if(username.Length > 0)
+                                    {
+                                        username = username[..^1];
+                                    }
+                                }
+
+                                else if (selectedRegisterScreenIndex == 1)
+                                    {
+                                        if(password.Length > 0)
+                                        {
+                                            password = password[..^1];
+                                        }
+                                    }
+
+                    }
+
+                    break;
+
+                    case GameState.LeaderboardMenu:
+
+
+                    if (Raylib.IsKeyPressed(KeyboardKey.Up))
+                    {
+                        selectedLeaderboardScreenIndex--;
+                    }
+                    if (Raylib.IsKeyPressed(KeyboardKey.Down))
+                    {
+                        selectedLeaderboardScreenIndex++;
+                    }
+                    if(selectedLeaderboardScreenIndex < 0)
+                    {
+                        selectedLeaderboardScreenIndex = leaderboardScreenItems.Length - 1;
+                    }
+                    if(selectedLeaderboardScreenIndex >= leaderboardScreenItems.Length)
+                    {
+                        selectedLeaderboardScreenIndex = 0;
+                    }
+
+                    if(game.state == GameState.LeaderboardMenu && Raylib.IsKeyPressed(KeyboardKey.Enter))
+                    {
+                        switch (selectedLeaderboardScreenIndex)
+                        {
+                            case 0:
+                                game.leaderboardDifficulty = Difficulty.Easy;
+
+                                leaderboardTask = _apiService.GetLeaderboardsAsync(game.leaderboardDifficulty); 
+
+                                game.state = GameState.Leaderboard;
+                            break;
+
+                            case 1:
+                                game.leaderboardDifficulty = Difficulty.Medium;
+
+                                leaderboardTask = _apiService.GetLeaderboardsAsync(game.leaderboardDifficulty);
+
+                                game.state = GameState.Leaderboard;
+                            break;
+
+                            case 2:
+                                game.leaderboardDifficulty = Difficulty.Hard;
+
+                                leaderboardTask = _apiService.GetLeaderboardsAsync(game.leaderboardDifficulty);
+
+                                game.state = GameState.Leaderboard;
+                            break;
+
+                            case 3:
+                                game.leaderboardDifficulty = Difficulty.Dynamic;
+
+                                leaderboardTask = _apiService.GetLeaderboardsAsync(game.leaderboardDifficulty);
+
+                                game.state = GameState.Leaderboard;
+                            break;
+
+                            case 4:
+                                game.state = GameState.Menu;
+                            break;
+                        }
+                    }
+
+                    break;
+
+                    case GameState.Leaderboard:
+
+
+                    if (Raylib.IsKeyPressed(KeyboardKey.Up))
+                    {
+                        selectedLeaderboardDifficultyIndex--;
+                    }
+                    if (Raylib.IsKeyPressed(KeyboardKey.Down))
+                    {
+                        selectedLeaderboardDifficultyIndex++;
+                    }
+                    if(selectedLeaderboardDifficultyIndex < 0)
+                    {
+                        selectedLeaderboardDifficultyIndex = leaderboardDifficultyItems.Length - 1;
+                    }
+                    if(selectedLeaderboardDifficultyIndex >= leaderboardDifficultyItems.Length)
+                    {
+                        selectedLeaderboardDifficultyIndex = 0;
+                    }
+
+                    if(game.state == GameState.Leaderboard && Raylib.IsKeyPressed(KeyboardKey.Enter))
+                    {
+                        switch (selectedLeaderboardDifficultyIndex)
+                        {
+                            case 0:
+                                game.state = GameState.LeaderboardMenu;
+                            break;
+                        }
+                    }
 
                     break;
             }
 
 
-
             game.Reset(game, rocket , pipes , width , random);
+            
 
             if (game.state == GameState.Playing && Raylib.IsKeyPressed(KeyboardKey.Space))
             {
@@ -399,6 +788,69 @@ class Program
                 {
                     game.state = GameState.GameOver;
                 }
+            }
+
+            if (registerTask != null && registerTask.IsCompleted)
+            {
+                bool success = registerTask.Result;
+
+                if (success)
+                {
+                    registerMessage = "Registration successful!\n\nPlease log in.";
+                    password = "";
+                    registerTask = null;
+                }
+                else
+                {
+                    registerMessage = "User already exists!";
+                    registerTask = null;
+                }
+            }
+
+
+            if(loginTask != null && loginTask.IsCompleted)
+            {
+                string token = loginTask.Result;
+
+                if(token != null)
+                {
+                    session.Token = token;
+                    game.state = GameState.Menu;
+                }
+
+                else
+                {
+                    loginError = "Incorrect username or password!";
+                }
+
+                loginTask = null;
+            }
+
+            if(leaderboardTask != null && leaderboardTask.IsCompleted)
+            {
+                leaderboardEntries = leaderboardTask.Result;
+
+                leaderboardTask = null;
+            }
+
+            if(game.state == GameState.GameOver && session.IsLoggedIn && addScoreTask == null && !game.scoreSent)
+            {
+                addScoreTask = _apiService.AddScoreAsync(game.score , game.difficulty , session.Token);
+                
+
+                game.scoreSent = true;
+            }
+
+            if(addScoreTask != null && addScoreTask.IsCompleted)
+            {
+                bool success = addScoreTask.Result;
+
+                if (success)
+                {
+                    Console.WriteLine("Score uploded");
+                }
+
+                addScoreTask = null;
             }
         
 
@@ -468,6 +920,102 @@ class Program
                 }
             }
 
+            if(game.state == GameState.StartScreen)
+            {
+                
+                Raylib.DrawTexture(title , 440 , 60 , Color.White);
+
+                for(int i = 0; i < startScreenItems.Length ; i++)
+                {
+                    Color color = 
+                    i == selectedStartScreenIdex ? Color.Yellow : Color.White;
+
+                    Raylib.DrawTextEx(gameFont , startScreenItems[i] , new Vector2(500 , 350 + i * 60) , 40 , 2 , color);
+                }
+            }
+
+
+            if(game.state == GameState.Login)
+            {
+                for(int i = 0; i < loginScreenItems.Length ; i++)
+                {
+                    Color color = 
+                    i == selectedLoginScreenIndex ? Color.Yellow : Color.White;
+
+                    Raylib.DrawTextEx(gameFont , "Login" , new Vector2(440 , 60) , 60 , 2 , Color.White);
+
+                    Raylib.DrawTextEx(gameFont , loginScreenItems[i] , new Vector2(500 , 350 + i * 60) , 40 , 2 , color);
+
+                    Raylib.DrawTextEx(gameFont , username , new Vector2(750, 350) , 40 , 2 , Color.White);
+
+                    Raylib.DrawTextEx(gameFont , new string('*' , password.Length) , new Vector2(750, 410) , 40 , 2 , Color.White);
+                }
+            }
+
+            if(loginError != "" && game.state == GameState.Login)
+            {
+                Raylib.DrawTextEx(gameFont , loginError , new Vector2(500, 600) , 30 , 2 , Color.Red);
+            }
+
+
+            if(game.state == GameState.Register)
+            {
+                for(int i = 0; i < registerScreenItems.Length ; i++)
+                {
+                    Color color = 
+                    i == selectedRegisterScreenIndex ? Color.Yellow : Color.White;
+
+                    Raylib.DrawTextEx(gameFont , "Register" , new Vector2(440 , 60) , 60 , 2 , Color.White);
+
+                    Raylib.DrawTextEx(gameFont , registerScreenItems[i] , new Vector2(500 , 350 + i * 60) , 40 , 2 , color);
+
+                    Raylib.DrawTextEx(gameFont , username , new Vector2(750, 350) , 40 , 2 , Color.White);
+
+                    Raylib.DrawTextEx(gameFont , new string('*' , password.Length) , new Vector2(750, 410) , 40 , 2 , Color.White);
+                }
+            }
+
+            if(game.state == GameState.LeaderboardMenu)
+            {
+                for(int i = 0; i < leaderboardScreenItems.Length ; i++)
+                {
+                    Color color = 
+                    i == selectedLeaderboardScreenIndex ? Color.Yellow : Color.White;
+
+                    Raylib.DrawTextEx(gameFont , leaderboardScreenItems[i] , new Vector2(500 , 350 + i * 60) , 40 , 2 , color);
+
+                    Raylib.DrawTextEx(gameFont , "Leaderboard" , new Vector2(440 , 60) , 60 , 2 , Color.White);
+                }
+            }
+
+            if(game.state == GameState.Leaderboard)
+            {
+                Raylib.DrawTextEx(gameFont , "Username" , new Vector2(150, 150) , 30 , 2 , Color.Yellow);
+
+                Raylib.DrawTextEx(gameFont , "Score" , new Vector2(550, 150) , 30 , 2 , Color.Yellow);
+
+                Raylib.DrawTextEx(gameFont , "Date" , new Vector2(800, 150) , 30 , 2 , Color.Yellow);
+
+            if(leaderboardEntries!= null)
+                {
+                    for(int i = 0 ; i < leaderboardEntries.Count ; i++)
+                    {
+                        LeaderboardEntryDto entry = leaderboardEntries[i];
+
+                        Raylib.DrawTextEx(gameFont , $"{i + 1}. {entry.Username} {entry.Score} {entry.Date:dd.MM.yyyy}" , new Vector2(250 , 180 + i * 40) , 30 , 2 , Color.White);
+                    }
+                }
+
+
+            }
+
+            if(registerMessage != "" && game.state == GameState.Login)
+            {
+                Raylib.DrawTextEx(gameFont , registerMessage , new Vector2(500, 600) , 30 , 2 , Color.Red);
+            }
+
+
+
             if (game.state == GameState.GameOver)
             {
                DrawCenteredText("Game over!" , Color.Red);
@@ -478,7 +1026,7 @@ class Program
                 DrawCenteredText("Pause" , Color.White);
             }
 
-            if(game.state == GameState.Playing)
+            if(game.state == GameState.Playing || game.state == GameState.Paused)
             {
                 Raylib.DrawText($"Score: {game.score}" , 20 , 20 , 30 , Color.White);
             }

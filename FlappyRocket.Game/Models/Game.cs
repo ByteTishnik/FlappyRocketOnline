@@ -8,11 +8,14 @@ public class Game
     public float speed = 0;
 
     public float pipeGap = 260f;
+    public bool scoreSent = false;
 
 
-    public GameState state = GameState.Menu;
+    public GameState state = GameState.StartScreen;
     public Difficulty difficulty = Difficulty.Medium;
     public Language language = Language.English;
+    public Difficulty leaderboardDifficulty = Difficulty.Easy;
+
 
     public void Start(Game game)
     {
@@ -46,7 +49,7 @@ public class Game
 
                 for(int i = 0; i < pipes.Length ; i++)
                 {
-                    pipes[i].x = width + random.Next(100 , 400) + i * 400;
+                    pipes[i].x = width + i * 400;
                     pipes[i].gapY = random.Next(100 , 500);
                     pipes[i].passed = false;
                 }
@@ -57,6 +60,8 @@ public class Game
                 game.gravity = 0;
                 game.speed = 0;
                 game.score = 0;
+                scoreSent = false;
+                
             }
     }
 
