@@ -1,20 +1,30 @@
 #  Flappy Rocket Online
 
-A **Flappy Bird-inspired game** built with **C#, Raylib-cs, ASP.NET Core, Entity Framework Core, and SQLite**.
 
-The project demonstrates both **game development** and **backend development** by combining a desktop game with an authenticated REST API and an online leaderboard.
+A Flappy Bird-inspired game built with **C#, Raylib-cs, ASP.NET Core, Entity Framework Core, and SQLite**.
 
+The project combines a desktop game with an authenticated ASP.NET Core Web API, allowing players to register, log in, and compete on an online leaderboard.
 ---
 
 ## 📸 Screenshots
 
+
 ### Main Menu
+
 
 <img width="1277" height="716" alt="Main Menu" src="https://github.com/user-attachments/assets/6ac97698-08f8-41a6-b2e1-b9a799cbc473" />
 
+
 ### Gameplay
 
+
 <img width="1274" height="716" alt="Gameplay" src="https://github.com/user-attachments/assets/96134933-24b1-4141-9d96-33f66b668819" />
+
+
+### Swagger
+
+
+<img width="1450" height="611" alt="Screenshot 2026-07-22 at 4 31 52 PM" src="https://github.com/user-attachments/assets/6b85b3f5-7f35-4f39-b49f-e8fcc9899d2d" />
 
 ---
 
@@ -32,7 +42,7 @@ The project demonstrates both **game development** and **backend development** b
 * Pause system
 * Score tracking
 * Game restart
-* Pixel-art inspired UI
+* Pixel-art style UI
 
 ### Online Features
 
