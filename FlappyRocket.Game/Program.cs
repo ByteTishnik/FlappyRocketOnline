@@ -1002,7 +1002,11 @@ class Program
                     {
                         LeaderboardEntryDto entry = leaderboardEntries[i];
 
-                        Raylib.DrawTextEx(gameFont , $"{i + 1}. {entry.Username} {entry.Score} {entry.Date:dd.MM.yyyy}" , new Vector2(250 , 180 + i * 40) , 30 , 2 , Color.White);
+                        Raylib.DrawTextEx(gameFont , $"{i + 1}. {entry.Username}" , new Vector2(150 , 180 + i * 40) , 30 , 2 , Color.White);
+
+                        Raylib.DrawTextEx(gameFont , $"{entry.Score}" , new Vector2(550 , 180 + i * 40) , 30 , 2 , Color.White);
+
+                        Raylib.DrawTextEx(gameFont , $"{entry.Date:dd.MM.yyyy}" , new Vector2(800 , 180 + i * 40) , 30 , 2 , Color.White);
                     }
                 }
 

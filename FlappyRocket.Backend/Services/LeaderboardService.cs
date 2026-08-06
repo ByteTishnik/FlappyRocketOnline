@@ -18,7 +18,7 @@ public class LeaderboardService
             Score = x.Score,
             Date = x.Date,
             Difficulty = x.Difficulty
-        }).ToList();
+        }).OrderByDescending(x => x.Score).ToList();
     }
 
     public void AddScore(AddScoreRequest request , int userId)
