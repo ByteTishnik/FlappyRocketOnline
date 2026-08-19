@@ -66,6 +66,17 @@ class Program
 
         UserSession session = new UserSession();
 
+        MainMenu mainMenu = new MainMenu();
+
+        DifficultyMenu difficultyMenu = new DifficultyMenu();
+
+        SettingsMenu settingsMenu = new SettingsMenu();
+
+        StartScreen startScreen = new StartScreen();
+
+        Leaderboard leaderboardDifficulty = new Leaderboard();
+
+
          
 
         string[] menuItems = Array.Empty<string>();
@@ -78,14 +89,9 @@ class Program
         string[] leaderboardDifficultyItems = Array.Empty<string>();
 
 
-        int selectedIndex = 0;
-        int selectedDifficultyIndex = 0;
-        int selectedSettingsIndex = 0;
-        int selectedStartScreenIdex = 0;
         int selectedLoginScreenIndex = 0;
         int selectedRegisterScreenIndex = 0;
         int selectedLeaderboardScreenIndex = 0;
-        int selectedLeaderboardDifficultyIndex = 0;
 
         
 
@@ -297,209 +303,38 @@ class Program
             {
                 case GameState.Menu :
 
-                if (Raylib.IsKeyPressed(KeyboardKey.Up))
-                {
-                    selectedIndex--;
-                }
-                if (Raylib.IsKeyPressed(KeyboardKey.Down))
-                {
-                    selectedIndex++;
-                }
-                if(selectedIndex < 0)
-                {
-                    selectedIndex = menuItems.Length - 1;
-                }
-                if(selectedIndex >= menuItems.Length)
-                {
-                    selectedIndex = 0;
-                }
-
-
-
-            if(game.state == GameState.Menu && Raylib.IsKeyPressed(KeyboardKey.Enter))
-            {
-                switch (selectedIndex)
-                {
-                    case 0:
-                        game.state = GameState.Playing;
-                    break;
-
-                    case 1:
-                        game.state = GameState.DifficultyMenu;
-                    break;
-
-                    case 2:
-                        game.state = GameState.Setting;
-                    break;
-
-                    case 3:
-                        game.state = GameState.LeaderboardMenu;
-                    break;
-
-                    case 4:
+                    if (mainMenu.Update(game , menuItems))
+                    {
                         return;
-                }
-            }
+                    }
 
                 break;
 
                 case GameState.DifficultyMenu :
 
-                if (Raylib.IsKeyPressed(KeyboardKey.Up))
-                {
-                    selectedDifficultyIndex--;
-                }
-                if (Raylib.IsKeyPressed(KeyboardKey.Down))
-                {
-                    selectedDifficultyIndex++;
-                }
-                if(selectedDifficultyIndex < 0)
-                {
-                    selectedDifficultyIndex = difficultyItems.Length - 1;
-                }
-                if(selectedDifficultyIndex >= difficultyItems.Length)
-                {
-                    selectedDifficultyIndex = 0;
-                }
-            
-
-            if(game.state == GameState.DifficultyMenu && Raylib.IsKeyPressed(KeyboardKey.Enter))
-            {
-                switch(selectedDifficultyIndex)
-                {
-                    case 0:
-                       game.difficulty = Difficulty.Easy;
-                       game.state = GameState.Menu;
-                    break;
-
-                    case 1:
-                        game.difficulty = Difficulty.Medium;
-                        game.state = GameState.Menu;
-                    break;
-
-                    case 2:
-                        game.difficulty = Difficulty.Hard;
-                        game.state = GameState.Menu;
-                    break;
-
-                    case 3:
-                        game.difficulty = Difficulty.Dynamic;
-                        game.state = GameState.Menu;
-                    break;
-
-                    case 4:
-                        game.state = GameState.Menu;
-                    break;
-                }
-            }
+                difficultyMenu.Update(game , difficultyItems);
                 
                 break;
 
                     case GameState.Setting:
 
-                    if (Raylib.IsKeyPressed(KeyboardKey.Up))
-                    {
-                        selectedSettingsIndex--;
-                    }
-                    if (Raylib.IsKeyPressed(KeyboardKey.Down))
-                    {
-                        selectedSettingsIndex++;
-                    }
-                    if(selectedSettingsIndex < 0)
-                    {
-                        selectedSettingsIndex = settingItems.Length - 1;
-                    }
-                    if(selectedSettingsIndex >= settingItems.Length)
-                    {
-                        selectedSettingsIndex = 0;
-                    }
-
-                    if(game.state == GameState.Setting && Raylib.IsKeyPressed(KeyboardKey.Enter))
-                    {
-                        switch (selectedSettingsIndex)
-                        {
-                            case 0:
-                                if(game.language == Language.English)
-                                {
-                                    game.language = Language.Russian;
-                                    selectedSettingsIndex = 0;
-                                }
-                                else if(game.language == Language.Russian)
-                                {
-                                    game.language = Language.English;
-                                    selectedSettingsIndex = 0;
-                                }
-
-                            break;
-
-                            case 1:
-                                    game.state = GameState.Menu;
-                            break;
-                        }
-                    }
+                    settingsMenu.Update(game , settingItems);
         
                     break;
 
                     case GameState.StartScreen:
 
-                    if (Raylib.IsKeyPressed(KeyboardKey.Up))
+                    if(startScreen.Update(game , startScreenItems))
                     {
-                        selectedStartScreenIdex--;
-                    }
-                    if (Raylib.IsKeyPressed(KeyboardKey.Down))
-                    {
-                        selectedStartScreenIdex++;
-                    }
-                    if(selectedStartScreenIdex < 0)
-                    {
-                        selectedStartScreenIdex = startScreenItems.Length - 1;
-                    }
-                    if(selectedStartScreenIdex >= startScreenItems.Length)
-                    {
-                        selectedStartScreenIdex = 0;
-                    }
-
-                    if(game.state == GameState.StartScreen && Raylib.IsKeyPressed(KeyboardKey.Enter))
-                    {
-                        switch (selectedStartScreenIdex)
-                        {
-                            case 0:
-                                game.state = GameState.Register;
-                            break;
-
-                            case 1:
-                                game.state = GameState.Login;
-                            break;
-
-                            case 2:
-                                game.state = GameState.Menu;
-                            break;
-
-                            case 3:
-                                return;
-                        }
+                        return;
                     }
 
                     break;
 
                     case GameState.Login:
 
-                    if (Raylib.IsKeyPressed(KeyboardKey.Up))
-                    {
-                        selectedLoginScreenIndex--;
-                    }
-                    if (Raylib.IsKeyPressed(KeyboardKey.Down))
-                    {
-                        selectedLoginScreenIndex++;
-                    }
-                    if(selectedLoginScreenIndex < 0)
-                    {
-                        selectedLoginScreenIndex = loginScreenItems.Length - 1;
-                    }
-                    if(selectedLoginScreenIndex >= loginScreenItems.Length)
-                    {
-                        selectedLoginScreenIndex = 0;
-                    }
+                    MenuNavigator.Update(ref selectedLoginScreenIndex , loginScreenItems.Length);
+
 
                 if(game.state == GameState.Login && Raylib.IsKeyPressed(KeyboardKey.Enter))
                     {
@@ -521,7 +356,7 @@ class Program
 
                         case 3:
                             game.state = GameState.StartScreen;
-                            selectedStartScreenIdex = 0;
+                            startScreen.selectedIndex = 0;
                             selectedLoginScreenIndex = 0;
                         break;
                     }
@@ -601,7 +436,7 @@ class Program
 
                         case 3:
                             game.state = GameState.StartScreen;
-                            selectedStartScreenIdex = 0;
+                            startScreen.selectedIndex = 0;
                             selectedRegisterScreenIndex = 0;
                         break;
                     }
@@ -641,30 +476,14 @@ class Program
                                             password = password[..^1];
                                         }
                                     }
-
                     }
 
                     break;
 
                     case GameState.LeaderboardMenu:
 
+                    MenuNavigator.Update(ref selectedLeaderboardScreenIndex , leaderboardScreenItems.Length);                
 
-                    if (Raylib.IsKeyPressed(KeyboardKey.Up))
-                    {
-                        selectedLeaderboardScreenIndex--;
-                    }
-                    if (Raylib.IsKeyPressed(KeyboardKey.Down))
-                    {
-                        selectedLeaderboardScreenIndex++;
-                    }
-                    if(selectedLeaderboardScreenIndex < 0)
-                    {
-                        selectedLeaderboardScreenIndex = leaderboardScreenItems.Length - 1;
-                    }
-                    if(selectedLeaderboardScreenIndex >= leaderboardScreenItems.Length)
-                    {
-                        selectedLeaderboardScreenIndex = 0;
-                    }
 
                     if(game.state == GameState.LeaderboardMenu && Raylib.IsKeyPressed(KeyboardKey.Enter))
                     {
@@ -712,33 +531,7 @@ class Program
 
                     case GameState.Leaderboard:
 
-
-                    if (Raylib.IsKeyPressed(KeyboardKey.Up))
-                    {
-                        selectedLeaderboardDifficultyIndex--;
-                    }
-                    if (Raylib.IsKeyPressed(KeyboardKey.Down))
-                    {
-                        selectedLeaderboardDifficultyIndex++;
-                    }
-                    if(selectedLeaderboardDifficultyIndex < 0)
-                    {
-                        selectedLeaderboardDifficultyIndex = leaderboardDifficultyItems.Length - 1;
-                    }
-                    if(selectedLeaderboardDifficultyIndex >= leaderboardDifficultyItems.Length)
-                    {
-                        selectedLeaderboardDifficultyIndex = 0;
-                    }
-
-                    if(game.state == GameState.Leaderboard && Raylib.IsKeyPressed(KeyboardKey.Enter))
-                    {
-                        switch (selectedLeaderboardDifficultyIndex)
-                        {
-                            case 0:
-                                game.state = GameState.LeaderboardMenu;
-                            break;
-                        }
-                    }
+                    leaderboardDifficulty.Update(game , leaderboardDifficultyItems);
 
                     break;
             }
@@ -887,7 +680,7 @@ class Program
                for (int i = 0 ; i < menuItems.Length; i++)
                 {
                     Color color =
-                    i == selectedIndex ? Color.Yellow : Color.White;
+                    i == mainMenu.SelectedIndex ? Color.Yellow : Color.White;
 
                 int menuStartY = 350;
 
@@ -897,13 +690,12 @@ class Program
             }
 
             
-
             if(game.state == GameState.DifficultyMenu)
             {
                 for(int i = 0 ; i < difficultyItems.Length; i++)
                 {
                     Color color =
-                    i == selectedDifficultyIndex ? Color.Yellow : Color.White;
+                    i == difficultyMenu.SelectedIndex ? Color.Yellow : Color.White;
 
                     Raylib.DrawTextEx(gameFont , difficultyItems[i] , new Vector2(500 , 250 + i * 60) , 40 , 2 , color);
                 }
@@ -914,7 +706,7 @@ class Program
                 for(int i = 0; i < settingItems.Length ; i++)
                 {
                     Color color = 
-                    i == selectedSettingsIndex ? Color.Yellow : Color.White;
+                    i == settingsMenu.SelectedIndex ? Color.Yellow : Color.White;
 
                     Raylib.DrawTextEx(gameFont , settingItems[i] , new Vector2(500 , 250 + i * 60) , 40 , 2 , color);
                 }
@@ -928,7 +720,7 @@ class Program
                 for(int i = 0; i < startScreenItems.Length ; i++)
                 {
                     Color color = 
-                    i == selectedStartScreenIdex ? Color.Yellow : Color.White;
+                    i == startScreen.selectedIndex ? Color.Yellow : Color.White;
 
                     Raylib.DrawTextEx(gameFont , startScreenItems[i] , new Vector2(500 , 350 + i * 60) , 40 , 2 , color);
                 }
@@ -1039,7 +831,7 @@ class Program
 
         if(debugMenu == true)
             {
-                Raylib.DrawText($"DifficultyIndex: {selectedDifficultyIndex}",20,100,20,Color.Red);
+                Raylib.DrawText($"DifficultyIndex: {difficultyMenu.SelectedIndex}",20,100,20,Color.Red);
 
                 Raylib.DrawText($"State: {game.state}",20,130,20,Color.Red);
 
