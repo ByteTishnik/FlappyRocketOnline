@@ -54,9 +54,8 @@ builder.Services.AddScoped<JwtService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlite(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? "Data Source=FlappyRocket.db");
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 var app = builder.Build();
