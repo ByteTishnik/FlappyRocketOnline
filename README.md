@@ -1,3 +1,4 @@
+
 # Flappy Rocket Online
 
 A Flappy Bird-inspired online game built with **C#, Raylib-cs, ASP.NET Core, Entity Framework Core, and PostgreSQL**.
@@ -26,6 +27,8 @@ The project combines a desktop game with an authenticated ASP.NET Core Web API, 
 
 ### Leaderboard 
 
+
+<img width="1261" height="682" alt="Screenshot 2026-08-20 at 5 09 42 PM" src="https://github.com/user-attachments/assets/ff87ecae-a066-4ccd-8c21-4170d6f175a6" />
 
 ---
 
