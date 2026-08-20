@@ -1,7 +1,10 @@
+using System.Numerics;
 using Raylib_cs;
 
 public class Pipe
 {
+    public const float Spacing = 450f;
+
     public float x = 1000f;
     public float gapY = 250f;
     public bool passed = false;
@@ -14,9 +17,9 @@ public class Pipe
     {
         x -= speed * Raylib.GetFrameTime();
 
-        if(x < -80)
+        if(x < -50)
             {
-                x += pipes.Length * 450;
+                x += pipes.Length * Spacing;
                 gapY = random.Next(100 , 440);
                 gapSize = pipeGap;
                 passed = false;
@@ -27,7 +30,7 @@ public class Pipe
     {
         for(int i = 0; i < pipes.Length; i++)
         {
-            pipes[i].x = width + random.Next(100 , 400) + i * 400;
+            pipes[i].x = width + i * Spacing;
             pipes[i].gapY = random.Next(100,500);
             pipes[i].passed = false;
         }

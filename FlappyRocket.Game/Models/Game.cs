@@ -49,8 +49,9 @@ public class Game
 
                 for(int i = 0; i < pipes.Length ; i++)
                 {
-                    pipes[i].x = width + i * 400;
+                    pipes[i].x = width + i * Pipe.Spacing;
                     pipes[i].gapY = random.Next(100 , 500);
+                    pipes[i].gapSize = game.pipeGap;
                     pipes[i].passed = false;
                 }
 
@@ -85,8 +86,8 @@ public class Game
         switch (difficulty)
         {
             case Difficulty.Easy:
-                speed = 180f;
-                pipeGap = 280f;
+                speed = 240f;
+                pipeGap = 240f;
             break;
 
             case Difficulty.Medium:

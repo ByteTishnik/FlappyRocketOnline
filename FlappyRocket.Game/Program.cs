@@ -116,7 +116,6 @@ class Program
         Texture2D title = Raylib.LoadTexture("Assets/Sprites/GameTitle.png");
 
 
-
         Raylib.InitAudioDevice();
         Music ambient = Raylib.LoadMusicStream("Assets/ambient.mp3");
         Raylib.PlayMusicStream(ambient);
@@ -154,7 +153,7 @@ class Program
             {
                 pipes[i] = new Pipe();
 
-                pipes[i].x = width + i * 400;
+                pipes[i].x = width + i * Pipe.Spacing;
             }
 
         while (!Raylib.WindowShouldClose())
@@ -805,7 +804,7 @@ class Program
 
             }
 
-            if(registerMessage != "" && game.state == GameState.Login)
+            if(registerMessage != "" && game.state == GameState.Register)
             {
                 Raylib.DrawTextEx(gameFont , registerMessage , new Vector2(500, 600) , 30 , 2 , Color.Red);
             }
